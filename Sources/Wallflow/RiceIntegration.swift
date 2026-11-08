@@ -70,7 +70,7 @@ func attemptGhosttyReload() -> String? {
     // Explicitly inspect the permission that belongs to this currently running binary.
     // Rebuilding with ad-hoc signing may invalidate an earlier TCC grant.
     guard AXIsProcessTrusted() else {
-        return "Wallflow's current build is not trusted for Accessibility. Quit Wallflow, remove its old entry in System Settings → Privacy & Security → Accessibility, add ~/Applications/Wallflow.app again, enable it, and reopen Wallflow."
+        return "The wallpaper and Matugen palette were applied, but Wallflow Rice cannot reload Ghostty yet. macOS has not granted Accessibility access to this build. Quit Wallflow Rice. Go to System Settings > Privacy & Security > Accessibility. Add the exact Wallflow Rice.app you launched, then enable it and reopen the app. For a development build, choose the app inside your project's dist folder. If an old Wallflow Rice entry is present, remove it first. Approval for Wallflow.app or Wallflow Core.app does not authorize Wallflow Rice.app."
     }
     let app = AXUIElementCreateApplication(ghostty.processIdentifier)
     var barValue: CFTypeRef?

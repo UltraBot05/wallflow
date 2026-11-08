@@ -99,6 +99,21 @@ private struct WallpaperCard: View {
 private struct WallflowView: View {
     @StateObject private var library = Library()
     @StoredState private var inspectorVisible = true
+    @State private var showingStatusDetails = false
+
+    private var statusSummary: String {
+        if library.status.contains("not trusted for Accessibility") {
+            return "Wallpaper applied. Ghostty needs permission."
+        }
+        if library.error && library.status.hasPrefix("Wallpaper applied") {
+            return "Wallpaper applied. Ghostty reload needs attention."
+        }
+        if library.error {
+            return "Action needs attention."
+        }
+        return library.status
+    }
+
     private let hues = ["All", "Red", "Orange", "Yellow", "Green", "Cyan", "Blue", "Purple", "Pink", "Mono"]
 
     private func color(for hue: String) -> Color {
@@ -274,8 +289,13 @@ private struct WallflowView: View {
         .safeAreaInset(edge: .bottom) {
             HStack(spacing: 8) {
                 Circle().fill(library.error ? .red : .green).frame(width: 6, height: 6)
-                Text(library.status).lineLimit(1).truncationMode(.tail)
+                Text(statusSummary).lineLimit(1).truncationMode(.tail)
                 Spacer(minLength: 0)
+                if library.error {
+                    Button("Details") { showingStatusDetails = true }
+                        .buttonStyle(.borderless)
+                        .accessibilityLabel("Show Wallflow error details")
+                }
             }
             .font(.caption2)
             .foregroundStyle(library.error ? Color.red : Color.secondary)
@@ -373,6 +393,35 @@ private struct WallflowView: View {
         .searchable(text: $library.query, placement: .toolbar, prompt: "Search wallpapers")
         .tint(.accentColor)
         .frame(minWidth: 750, minHeight: 510)
+        .onChange(of: library.error) { _, hasError in
+            if hasError { showingStatusDetails = true }
+        }
+        .sheet(isPresented: $showingStatusDetails) {
+            VStack(alignment: .leading, spacing: 16) {
+                Label("Wallflow Rice needs attention", systemImage: "exclamationmark.triangle")
+                    .font(.title3.weight(.semibold))
+                Text("Your wallpaper may already be applied. See the details below.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                ScrollView {
+                    Text(library.status)
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                Divider()
+                HStack {
+                    Button("Copy Details") {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(library.status, forType: .string)
+                    }
+                    Spacer()
+                    Button("Done") { showingStatusDetails = false }
+                        .keyboardShortcut(.defaultAction)
+                }
+            }
+            .padding(24)
+            .frame(width: 500, height: 310)
+        }
         // Standard macOS fullscreen: Window menu > Exit Full Screen or Ctrl-Cmd-F.
         // Never change NSWindow.level, collectionBehavior or native traffic lights.
     }
