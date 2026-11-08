@@ -1,0 +1,29 @@
+# OS and editor files
+.DS_Store
+*.swp
+.vscode/
+.idea/
+# Build outputs
+dist/
+.build/
+build/
+DerivedData/
+.swiftpm/
+*.app/
+*.dSYM/
+*.zip
+*.dmg
+*.xcuserstate
+*.xcuserdata/
+# User data and generated colors
+wallpapers/
+*.photoslibrary/
+native-index.json
+favorites.json
+current.json
+generated-colors.conf
+# Signing and credentials
+*.p12
+*.mobileprovision
+.env
+.env.*
