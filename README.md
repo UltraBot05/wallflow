@@ -1,42 +1,43 @@
-# Wallflow Core
+# Wallflow Rice
 
-A native wallpaper browser for macOS. Choose your own image folder, browse collections, filter by color, save favorites, and set desktop wallpapers.
+The ricing edition of Wallflow. Browse and apply wallpapers with the native macOS gallery, then generate a matching Matugen palette and reload Ghostty.
 
-**Core does not require Ghostty, Matugen, FloatPane, skhd, Homebrew, or a pre-existing wallpaper directory.**
+**Matugen and Ghostty are required for this edition.** Wallflow Rice reports setup errors instead of treating a missing dependency as an optional feature.
 
 ## Requirements
 
 - macOS 14 or later
-- Swift compiler from Xcode or Apple Command Line Tools, for local source builds
-- A folder of your own wallpaper images
+- Ghostty installed and discoverable by macOS
+- Matugen installed and configured with a Ghostty template
+- Swift compiler from Xcode or Apple Command Line Tools for source builds
+- A user-selected folder of wallpapers
+- Accessibility permission for the current local developer build when it asks Ghostty to reload
 
 ## Local build
 
 ```sh
 ./Scripts/build-app.sh
-open "dist/Wallflow Core.app"
+open "dist/Wallflow Rice.app"
 ```
 
-Or install beside your other apps without overwriting existing installations:
+Or install as a separate application without overwriting an existing Wallflow installation:
 
 ```sh
 ./Scripts/install-local.sh
 ```
 
-On first launch, choose a folder. Wallflow reads images from that folder and does not copy them into the repository.
+See [Rice setup](Docs/RICE_SETUP.md) before using the palette feature. On a Mac without a wallpaper folder, choose one in Wallflow Rice.
 
 ## Two maintained editions
 
-- `main`: Wallflow Core. A standalone native wallpaper manager.
-- `rice`: Wallflow Rice. The same wallpaper manager with required Matugen and Ghostty integration.
+- `main`: Wallflow Core. Independent wallpaper manager without Ghostty or Matugen.
+- `rice`: Wallflow Rice. Actively maintained wallpaper manager with required Ghostty and Matugen.
 
-Both branches are maintained. Neither is legacy. The edition-specific app bundles use different names and identifiers, so they can coexist.
+Both branches receive fixes and releases. Rice is not a legacy branch. The editions use different application names and bundle IDs so users can install both.
 
-## Development
+## Known issue
 
-The app currently builds directly with `swiftc`. See `Docs/DEVELOPMENT.md` for source structure, testing limitations and release checklist.
-
-No personal wallpapers, generated themes, screenshots or local application data should be committed. For bug reports and planned work, use GitHub Issues after the new remote is created.
+The Ghostty reload path currently uses macOS Accessibility to open the Ghostty application menu. It works locally but briefly displays the menu. This is tracked as a bug and is not suitable for a polished public release. Do not claim silent reloads or permission-free operation until implemented and tested.
 
 ## License
 

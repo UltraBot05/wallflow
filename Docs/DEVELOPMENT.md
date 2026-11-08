@@ -2,7 +2,7 @@
 
 ## Branch policy
 
-`main` and `rice` are both active release lines. Keep common gallery fixes and security improvements synchronized across branches. Cherry-pick or merge shared commits deliberately and test both editions after any common change.
+`main` and `rice` are both active release lines. Rice explicitly requires Matugen and Ghostty. Keep common gallery fixes and security improvements synchronized across branches. Cherry-pick or merge shared commits deliberately and test both editions after any common change.
 
 ## Source layout
 

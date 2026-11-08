@@ -158,23 +158,46 @@ final class Library: ObservableObject {
         guard !applying else { return }
         applying = true
         error = false
-        status = "Applying wallpaper..."
-        defer { applying = false }
-        do {
-            for screen in NSScreen.screens {
-                try NSWorkspace.shared.setDesktopImageURL(
-                    URL(fileURLWithPath: item.path), for: screen, options: [:])
+        status = "Generating Matugen palette…"
+        let index = sourceIndex
+        Task {
+            let result: Result<Void, Error> = await Task.detached(priority: .userInitiated) {
+                do {
+                    try checkRiceDependencies()
+                    try generateTheme(for: item.path, sourceIndex: index)
+                    return .success(())
+                }
+                catch { return .failure(error) }
+            }.value
+            switch result {
+            case .failure(let problem):
+                self.error = true
+                self.status = "Matugen: \(problem.localizedDescription.trimmingCharacters(in: .whitespacesAndNewlines))"
+            case .success:
+                do {
+                    for screen in NSScreen.screens {
+                        try NSWorkspace.shared.setDesktopImageURL(URL(fileURLWithPath: item.path), for: screen, options: [:])
+                    }
+                    self.current = item.id
+                    try? FileManager.default.createDirectory(at: wallflowConfig, withIntermediateDirectories: true)
+                    let record: [String: Any] = ["id": item.id, "sourceIndex": index]
+                    if let data = try? JSONSerialization.data(withJSONObject: record, options: [.prettyPrinted]) {
+                        try? data.write(to: wallflowConfig.appendingPathComponent("current.json"), options: .atomic)
+                    }
+                    let reloadError = await Task.detached(priority: .utility) { attemptGhosttyReload() }.value
+                    if let reloadError {
+                        self.status = "Wallpaper applied · Matugen updated · " + reloadError
+                        self.error = true
+                    } else {
+                        self.status = "Wallpaper applied · Matugen updated · Ghostty reload requested"
+                        self.error = false
+                    }
+                } catch {
+                    self.error = true
+                    self.status = "Theme generated, but macOS wallpaper setting failed: \(error.localizedDescription)"
+                }
             }
-            current = item.id
-            try? FileManager.default.createDirectory(at: wallflowConfig, withIntermediateDirectories: true)
-            let record: [String: Any] = ["id": item.id]
-            if let data = try? JSONSerialization.data(withJSONObject: record, options: [.prettyPrinted]) {
-                try? data.write(to: wallflowConfig.appendingPathComponent("current.json"), options: .atomic)
-            }
-            status = "Wallpaper applied."
-        } catch {
-            self.error = true
-            status = "Could not apply wallpaper: \(error.localizedDescription)"
+            self.applying = false
         }
     }
 }

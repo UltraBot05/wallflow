@@ -318,6 +318,16 @@ private struct WallflowView: View {
                     LabeledContent("Appearance") {
                         Text(library.analyses[item.id]?.isDark == true ? "Dark" : "Light")
                     }
+                    Divider()
+                    Label("Dynamic terminal colors", systemImage: "paintpalette")
+                        .font(.subheadline.weight(.semibold))
+                    Text("Matugen generates a palette and Wallflow asks Ghostty to reload it.")
+                        .font(.caption).foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Picker("Color source", selection: $library.sourceIndex) {
+                        ForEach(0..<5, id: \.self) { Text("Candidate \($0)").tag($0) }
+                    }
+                    .controlSize(.small)
                     Button { library.toggleFavorite(item) } label: {
                         Label(library.favorites.contains(item.id) ? "Remove from Favorites" : "Save to Favorites",
                               systemImage: library.favorites.contains(item.id) ? "heart.fill" : "heart")
@@ -376,7 +386,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 struct WallflowNativeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     var body: some Scene {
-        WindowGroup("Wallflow", id: "picker") {
+        WindowGroup("Wallflow Rice", id: "picker") {
             WallflowView()
         }
         .defaultSize(width: 1270, height: 800)
