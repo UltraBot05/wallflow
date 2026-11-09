@@ -89,4 +89,4 @@ Your images stay in their chosen folder. Rice invokes locally installed tools an
 - [Release preparation](Docs/RELEASE_GUIDE.md)
 - [Issues](https://github.com/UltraBot05/wallflow/issues)
 
-**License:** [MIT](LICENSE). See [asset and third-party rights](Docs/ASSET_RIGHTS.md).
+**License:** [MIT](LICENSE)..
