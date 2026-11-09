@@ -20,7 +20,7 @@ Track source, scripts, documentation and owned artwork. Never track `~/wallpaper
 
 ## Build verification
 
-Run `./Scripts/build-app.sh` on a Mac with the Xcode Command Line Tools installed. Test an empty library, a folder containing images at its root, nested folders, search, color filters, favorites, multiple displays and full screen. This source was restructured outside macOS and needs a real Apple SDK compile before publishing.
+Run `./Scripts/build-app.sh` on a Mac with the Xcode Command Line Tools installed. Test an empty library, a folder containing images at its root, nested folders, search, color filters, favorites, multiple displays and full screen. Both editions compile in GitHub Actions and have been exercised on an Apple Silicon development Mac. Additional device testing is welcome.
 
 ## Releases
 

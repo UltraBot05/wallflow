@@ -20,6 +20,13 @@
 
 <sub>Wallflow Core on macOS. Screenshot from a development build.</sub>
 
+## Alpha downloads
+
+**[Download Wallflow Core alpha](https://github.com/UltraBot05/wallflow/releases/tag/core-v0.6.0-alpha.1)**  |  [Installation and security notes](Docs/INSTALL_UNSIGNED_ALPHA.md)
+
+**Ad-hoc signed, unnotarized Apple Silicon alpha.** macOS may ask for additional approval. Read the installation notes before downloading.
+
+
 ## Why Wallflow?
 
 Your wallpaper collection should be easy to browse, not buried in Finder windows. Wallflow turns a folder of images into a searchable library with previews and quick desktop application.
@@ -48,7 +55,7 @@ No account, Ghostty, Matugen, FloatPane, Homebrew, or preloaded image collection
 
 **[View GitHub Releases](https://github.com/UltraBot05/wallflow/releases)**
 
-Signed, downloadable builds are being prepared. The Releases page is the download location when the first build is published. Until then, build locally with Apple's Swift toolchain:
+Ad-hoc signed Apple Silicon alpha ZIP files are on the [release page](https://github.com/UltraBot05/wallflow/releases/tag/core-v0.6.0-alpha.1). These are not notarized. See [installation notes](Docs/INSTALL_UNSIGNED_ALPHA.md).
 
 ```sh
 git clone https://github.com/UltraBot05/wallflow.git
@@ -79,6 +86,6 @@ This project is in active development. Both editions build in GitHub Actions, bu
 - [Development notes](Docs/DEVELOPMENT.md)
 - [Privacy notes](Docs/PRIVACY.md)
 - [Issue tracker](https://github.com/UltraBot05/wallflow/issues)
-- [Release preparation](Docs/RELEASE_GUIDE.md)
+- [Alpha installation](Docs/INSTALL_UNSIGNED_ALPHA.md)
 
-**License:** [MIT](LICENSE)..
+**License:** [MIT](LICENSE).
