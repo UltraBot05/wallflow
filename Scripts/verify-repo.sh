@@ -7,7 +7,7 @@ fail() { print -u2 "FAIL: $1"; exit 1 }
 [[ -f "$ROOT/Resources/AppIcon.icns" ]] || fail "Missing source app icon"
 [[ -f "$ROOT/Sources/Wallflow/Library.swift" ]] || fail "Missing library source"
 [[ -f "$ROOT/Sources/Wallflow/Views.swift" ]] || fail "Missing UI source"
-[[ -f "$ROOT/Docs/RELEASE_CHECKLIST.md" ]] || fail "Missing release checklist"
+[[ -f "$ROOT/Docs/INSTALL_UNSIGNED_ALPHA.md" ]] || fail "Missing release checklist"
 
 if [[ "$EDITION" == "core" ]]; then
   [[ ! -e "$ROOT/Sources/Wallflow/RiceIntegration.swift" ]] || fail "Rice integration must not exist on Core"
