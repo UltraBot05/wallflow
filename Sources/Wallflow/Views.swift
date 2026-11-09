@@ -400,7 +400,9 @@ private struct WallflowView: View {
             VStack(alignment: .leading, spacing: 16) {
                 Label("Wallflow Rice needs attention", systemImage: "exclamationmark.triangle")
                     .font(.title3.weight(.semibold))
-                Text("Your wallpaper may already be applied. See the details below.")
+                Text(library.status.hasPrefix("Wallpaper applied")
+                    ? "The wallpaper was applied, but another step needs attention."
+                    : "The wallpaper was not applied. See the details below.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                 ScrollView {

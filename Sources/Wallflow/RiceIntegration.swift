@@ -16,6 +16,23 @@ func checkRiceDependencies() throws {
 // Matugen is a user-installed executable. Avoid shells and inherited PATH search.
 // A private, unlinked temporary file captures bounded diagnostic output without
 // deadlocking the child if it writes extensively to stderr or stdout.
+// Matugen can write ANSI formatting, full Rust backtraces and local file paths.
+// Display only a bounded, single-line diagnostic in the application UI.
+private func displayableMatugenError(_ raw: String) -> String {
+    let withoutANSI = raw.replacingOccurrences(
+        of: "\u{001B}\\[[0-9;]*[A-Za-z]", with: "", options: .regularExpression)
+    let lines = withoutANSI.components(separatedBy: .newlines)
+        .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+    guard let first = lines.first(where: { !$0.isEmpty }) else {
+        return "Matugen exited unsuccessfully."
+    }
+    let safe = first.replacingOccurrences(of: "[[:cntrl:]]", with: "", options: .regularExpression)
+    if safe.contains("/Users/") || safe.contains("/home/") {
+        return "Matugen failed. Check your configuration and the selected image."
+    }
+    return String(safe.prefix(240))
+}
+
 private func execute(_ executable: String, _ args: [String]) throws -> String {
     var template = Array(FileManager.default.temporaryDirectory
         .appendingPathComponent("wallflow-matugen-XXXXXX").path.utf8CString)
@@ -59,7 +76,7 @@ private func execute(_ executable: String, _ args: [String]) throws -> String {
     guard process.terminationReason == .exit && process.terminationStatus == 0 else {
         throw NSError(domain: "WallflowRice", code: Int(process.terminationStatus),
                       userInfo: [NSLocalizedDescriptionKey:
-                          errorMessage.isEmpty ? "Matugen exited unsuccessfully." : errorMessage])
+                          displayableMatugenError(errorMessage)])
     }
     return errorMessage
 }
