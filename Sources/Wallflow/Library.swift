@@ -113,6 +113,9 @@ final class Library: ObservableObject {
             if !extensions.contains(url.pathExtension.lowercased()) { continue }
             let attr = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey, .contentModificationDateKey])
             if attr?.isRegularFile != true || attr?.isSymbolicLink == true { continue }
+            // Avoid indexing extremely large or empty files as wallpapers.
+            guard let fileSize = attr?.fileSize,
+                  fileSize > 0, fileSize <= 150 * 1024 * 1024 else { continue }
             let id = String(url.path.dropFirst(wallpapersRoot.path.count + 1))
             let cat = id.contains("/") ? (id.split(separator: "/").first.map(String.init) ?? "Unsorted") : "Unsorted"
             let stamp = "\(attr?.fileSize ?? 0):\(Int(attr?.contentModificationDate?.timeIntervalSince1970 ?? 0))"
