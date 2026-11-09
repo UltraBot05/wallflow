@@ -81,4 +81,4 @@ This project is in active development. Both editions build in GitHub Actions, bu
 - [Issue tracker](https://github.com/UltraBot05/wallflow/issues)
 - [Release preparation](Docs/RELEASE_GUIDE.md)
 
-**License:** To be selected before the repository is made public. Source visibility alone does not grant reuse rights.
+**License:** [MIT](LICENSE). See [asset and third-party rights](Docs/ASSET_RIGHTS.md).
