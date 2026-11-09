@@ -65,6 +65,30 @@ private func makeThumbnail(_ path: String, size: Int) -> CGImage? {
     return CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary)
 }
 
+// Check image headers during indexing, before exposing an item as a wallpaper.
+// The apply action additionally attempts a small real decode, because files can
+// change after indexing and metadata alone does not prove the pixels decode.
+func hasUsableWallpaperMetadata(_ path: String) -> Bool {
+    let url = URL(fileURLWithPath: path)
+    guard let attributes = try? url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey]),
+          attributes.isRegularFile == true, attributes.isSymbolicLink != true,
+          let fileSize = attributes.fileSize, fileSize > 0,
+          fileSize <= 150 * 1024 * 1024,
+          let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+          let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+          let width = properties[kCGImagePropertyPixelWidth as String] as? NSNumber,
+          let height = properties[kCGImagePropertyPixelHeight as String] as? NSNumber else {
+        return false
+    }
+    let w = width.int64Value
+    let h = height.int64Value
+    return w > 0 && h > 0 && w <= 32_768 && h <= 32_768 && w <= 150_000_000 / h
+}
+
+func isDecodableWallpaper(_ path: String) -> Bool {
+    hasUsableWallpaperMetadata(path) && makeThumbnail(path, size: 64) != nil
+}
+
 final class ThumbnailCache {
     static let shared = ThumbnailCache()
     private let images = NSCache<NSString, NSImage>()

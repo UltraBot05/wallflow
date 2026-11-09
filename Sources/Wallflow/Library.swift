@@ -116,6 +116,7 @@ final class Library: ObservableObject {
             // Avoid indexing extremely large or empty files as wallpapers.
             guard let fileSize = attr?.fileSize,
                   fileSize > 0, fileSize <= 150 * 1024 * 1024 else { continue }
+            guard hasUsableWallpaperMetadata(url.path) else { continue }
             let id = String(url.path.dropFirst(wallpapersRoot.path.count + 1))
             let cat = id.contains("/") ? (id.split(separator: "/").first.map(String.init) ?? "Unsorted") : "Unsorted"
             let stamp = "\(attr?.fileSize ?? 0):\(Int(attr?.contentModificationDate?.timeIntervalSince1970 ?? 0))"
@@ -159,6 +160,11 @@ final class Library: ObservableObject {
 
     func apply(_ item: Wallpaper) {
         guard !applying else { return }
+        guard isDecodableWallpaper(item.path) else {
+            error = true
+            status = "This wallpaper is missing, unreadable, or has changed. Refresh the library and choose another image."
+            return
+        }
         applying = true
         error = false
         status = "Applying wallpaper..."
