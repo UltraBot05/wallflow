@@ -1,4 +1,5 @@
 import AppKit
+import Darwin
 import ApplicationServices
 
 func checkRiceDependencies() throws {
@@ -12,19 +13,53 @@ func checkRiceDependencies() throws {
     // generateTheme checks that Matugen is executable and configured.
 }
 
+// Matugen is a user-installed executable. Avoid shells and inherited PATH search.
+// A private, unlinked temporary file captures bounded diagnostic output without
+// deadlocking the child if it writes extensively to stderr or stdout.
 private func execute(_ executable: String, _ args: [String]) throws -> String {
+    var template = Array(FileManager.default.temporaryDirectory
+        .appendingPathComponent("wallflow-matugen-XXXXXX").path.utf8CString)
+    let descriptor = template.withUnsafeMutableBufferPointer { buffer in
+        mkstemp(buffer.baseAddress!)
+    }
+    guard descriptor >= 0 else {
+        throw NSError(domain: "WallflowRice", code: 3,
+                      userInfo: [NSLocalizedDescriptionKey: "Could not create private Matugen output log."])
+    }
+    _ = template.withUnsafeBufferPointer { buffer in unlink(buffer.baseAddress!) }
+    let log = FileHandle(fileDescriptor: descriptor, closeOnDealloc: true)
+    defer { log.closeFile() }
+
     let process = Process()
     process.executableURL = URL(fileURLWithPath: executable)
     process.arguments = args
-    let err = Pipe()
-    process.standardError = err
-    process.standardOutput = Pipe()
+    process.standardOutput = FileHandle.nullDevice
+    process.standardError = log
+
+    let completed = DispatchSemaphore(value: 0)
+    process.terminationHandler = { _ in completed.signal() }
     try process.run()
-    process.waitUntilExit()
-    let errorMessage = String(data: err.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
-    if process.terminationStatus != 0 {
-        throw NSError(domain: "Wallflow", code: Int(process.terminationStatus),
-                      userInfo: [NSLocalizedDescriptionKey: errorMessage.isEmpty ? "Command failed: \(executable)" : errorMessage])
+
+    let finishedInTime = completed.wait(timeout: .now() + .seconds(45)) == .success
+    if !finishedInTime {
+        if process.isRunning { process.terminate() }
+        if completed.wait(timeout: .now() + .seconds(2)) == .timedOut && process.isRunning {
+            _ = kill(process.processIdentifier, SIGKILL)
+            _ = completed.wait(timeout: .now() + .seconds(3))
+        }
+    }
+
+    log.seek(toFileOffset: 0)
+    let errorMessage = String(data: log.readData(ofLength: 8_192), encoding: .utf8)?
+        .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    guard finishedInTime else {
+        throw NSError(domain: "WallflowRice", code: 4,
+                      userInfo: [NSLocalizedDescriptionKey: "Matugen did not finish within 45 seconds and was stopped."])
+    }
+    guard process.terminationReason == .exit && process.terminationStatus == 0 else {
+        throw NSError(domain: "WallflowRice", code: Int(process.terminationStatus),
+                      userInfo: [NSLocalizedDescriptionKey:
+                          errorMessage.isEmpty ? "Matugen exited unsuccessfully." : errorMessage])
     }
     return errorMessage
 }
@@ -35,14 +70,14 @@ func generateTheme(for path: String, sourceIndex: Int) throws {
         throw NSError(domain: "Wallflow", code: 1,
                       userInfo: [NSLocalizedDescriptionKey: "Missing ~/.config/matugen/config.toml. Your existing Matugen setup is needed."])
     }
-    var candidates = [home.appendingPathComponent(".cargo/bin/matugen").path,
+    // Search only documented installation locations. Do not resolve executables
+    // through an inherited PATH, which could redirect execution unexpectedly.
+    let candidates = [home.appendingPathComponent(".cargo/bin/matugen").path,
+                      home.appendingPathComponent(".local/bin/matugen").path,
                       "/opt/homebrew/bin/matugen", "/usr/local/bin/matugen"]
-    if let env = ProcessInfo.processInfo.environment["PATH"] {
-        candidates += env.split(separator: ":").map { String($0) + "/matugen" }
-    }
     guard let binary = candidates.first(where: { FileManager.default.isExecutableFile(atPath: $0) }) else {
-        throw NSError(domain: "Wallflow", code: 1,
-                      userInfo: [NSLocalizedDescriptionKey: "Matugen binary not found in ~/.cargo/bin or Homebrew."])
+        throw NSError(domain: "WallflowRice", code: 1,
+                      userInfo: [NSLocalizedDescriptionKey: "Matugen not found in the supported Cargo, local, or Homebrew paths."])
     }
     _ = try execute(binary, ["-c", config, "image", path,
                              "--mode", "dark", "--source-color-index", String(sourceIndex)])
@@ -64,7 +99,7 @@ func attemptGhosttyReload() -> String? {
     // Run Accessibility actions in Wallflow itself. Launching /usr/bin/osascript
     // caused macOS to deny the *helper process* even when Wallflow was enabled.
     guard let ghostty = NSWorkspace.shared.runningApplications.first(where: {
-        $0.bundleIdentifier == "com.mitchellh.ghostty" || $0.localizedName == "Ghostty"
+        $0.bundleIdentifier == "com.mitchellh.ghostty"
     }) else { return nil } // Palette will be loaded on Ghostty's next launch.
 
     // Explicitly inspect the permission that belongs to this currently running binary.
@@ -77,6 +112,9 @@ func attemptGhosttyReload() -> String? {
     let barStatus = AXUIElementCopyAttributeValue(app, kAXMenuBarAttribute as CFString, &barValue)
     guard barStatus == .success, let bar = barValue else {
         return "Ghostty reload: cannot access its menu bar (AX error \(barStatus.rawValue))."
+    }
+    guard CFGetTypeID(bar) == AXUIElementGetTypeID() else {
+        return "Ghostty reload: invalid menu bar element."
     }
     let menuBar = bar as! AXUIElement
     guard let ghosttyMenu = axChildren(menuBar).first(where: { axTitle($0) == "Ghostty" }) else {

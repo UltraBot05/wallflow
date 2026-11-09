@@ -42,7 +42,20 @@ private func hueColor(_ hue: String) -> Color {
 
 private func makeThumbnail(_ path: String, size: Int) -> CGImage? {
     let url = URL(fileURLWithPath: path) as CFURL
-    guard let source = CGImageSourceCreateWithURL(url, nil) else { return nil }
+    // Image metadata is untrusted. Reject implausibly large images before decoding.
+    guard let source = CGImageSourceCreateWithURL(url, nil),
+          let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [String: Any],
+          let width = properties[kCGImagePropertyPixelWidth as String] as? NSNumber,
+          let height = properties[kCGImagePropertyPixelHeight as String] as? NSNumber else {
+        return nil
+    }
+    let pixelWidth = width.int64Value
+    let pixelHeight = height.int64Value
+    guard pixelWidth > 0, pixelHeight > 0,
+          pixelWidth <= 32_768, pixelHeight <= 32_768,
+          pixelWidth <= 150_000_000 / pixelHeight else {
+        return nil
+    }
     let options: [CFString: Any] = [
         kCGImageSourceCreateThumbnailFromImageAlways: true,
         kCGImageSourceCreateThumbnailWithTransform: true,
