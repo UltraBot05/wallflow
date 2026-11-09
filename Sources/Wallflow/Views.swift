@@ -99,7 +99,7 @@ private struct WallpaperCard: View {
 private struct WallflowView: View {
     @StateObject private var library = Library()
     @StoredState private var inspectorVisible = true
-    @State private var showingStatusDetails = false
+    @StoredState private var showingStatusDetails = false
 
     private var statusSummary: String {
         if library.status.contains("not trusted for Accessibility") {
