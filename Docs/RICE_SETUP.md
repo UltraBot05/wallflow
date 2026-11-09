@@ -8,7 +8,7 @@ Install Ghostty and Matugen from their official distribution channels. With Home
 
 ## 2. Configure Matugen
 
-Wallflow Rice expects `~/.config/matugen/config.toml` to provide a Ghostty output template. A sample template is included under `Examples/`.
+Wallflow Rice expects `~/.config/matugen/config.toml` to provide a Ghostty output template. An example Ghostty template is included at `Examples/ghostty.conf`, with a matching sample TOML file in the same directory. Copy and adjust these only if you do not already have a working Matugen template.
 
 For an existing setup, keep your working Matugen config. The app will call `matugen -c <config> image <wallpaper> --mode dark --source-color-index <n>`.
 
@@ -23,3 +23,5 @@ Known issue: Ghostty's menu briefly appears when reloading. This must be correct
 ## 4. Wallpaper library
 
 Choose any folder containing supported local images. Existing users with `~/wallpapers` will have that folder detected automatically. Images may be placed directly in the root or organized into category subfolders.
+
+For local development, run `./Scripts/signing-info.sh` and see [development notes](DEVELOPMENT.md). If macOS asks for Accessibility, authorize the exact `.app` executable you are launching. Permission for your previous `Wallflow.app` does not grant permission to `Wallflow Rice.app`.

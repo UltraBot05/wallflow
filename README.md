@@ -42,3 +42,14 @@ The Ghostty reload path currently uses macOS Accessibility to open the Ghostty a
 ## License
 
 A public distribution license has not been chosen yet. Do not publish binary releases until licensing and icon provenance are checked.
+
+## Developer verification
+
+Before pushing commits, run:
+
+```sh
+./Scripts/verify-repo.sh
+./Scripts/build-app.sh --replace
+```
+
+The second command replaces only this branch's ignored `dist` build after making a backup. See [development notes](Docs/DEVELOPMENT.md), [GitHub workflow](Docs/GITHUB_WORKFLOW.md) and [release checklist](Docs/RELEASE_CHECKLIST.md).
