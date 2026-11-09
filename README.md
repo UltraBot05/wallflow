@@ -53,3 +53,7 @@ Before pushing commits, run:
 ```
 
 The second command replaces only this branch's ignored `dist` build after making a backup. See [development notes](Docs/DEVELOPMENT.md), [GitHub workflow](Docs/GITHUB_WORKFLOW.md) and [release checklist](Docs/RELEASE_CHECKLIST.md).
+
+## Screenshot
+
+![Wallflow Rice](Docs/Screenshots/wallflow-rice.png)
