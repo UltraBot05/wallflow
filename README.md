@@ -1,54 +1,84 @@
-# Wallflow Core
+<div align="center">
+  <img src="Docs/Brand/wallflow-icon.png" width="92" alt="Wallflow icon">
+  <h1>Wallflow</h1>
+  <p><strong>A better home for your wallpapers.</strong></p>
+  <p>Browse, organize, and apply your local wallpaper collection in a native macOS app.</p>
+  <p>
+    <a href="https://github.com/UltraBot05/wallflow/releases"><strong>Releases</strong></a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://github.com/UltraBot05/wallflow/tree/rice">Wallflow Rice</a>
+    &nbsp;&middot;&nbsp;
+    <a href="https://github.com/UltraBot05/wallflow/issues">Report an issue</a>
+  </p>
+  <p>
+    <img alt="Core build status" src="https://github.com/UltraBot05/wallflow/actions/workflows/build.yml/badge.svg?branch=main">
+    &nbsp; Swift + SwiftUI &nbsp; | &nbsp; macOS 14+
+  </p>
+</div>
 
-A native wallpaper browser for macOS. Choose your own image folder, browse collections, filter by color, save favorites, and set desktop wallpapers.
+![Wallflow Core showing the native wallpaper gallery and inspector](Docs/Screenshots/wallflow-core.png)
 
-**Core does not require Ghostty, Matugen, FloatPane, skhd, Homebrew, or a pre-existing wallpaper directory.**
+<sub>Wallflow Core on macOS. Screenshot from a development build.</sub>
 
-## Requirements
+## Why Wallflow?
 
-- macOS 14 or later
-- Swift compiler from Xcode or Apple Command Line Tools, for local source builds
-- A folder of your own wallpaper images
+Your wallpaper collection should be easy to browse, not buried in Finder windows. Wallflow turns a folder of images into a searchable library with previews and quick desktop application.
 
-## Local build
+- **Bring your own library.** Select a folder of images. Subfolders appear as collections.
+- **Find the right wallpaper.** Search names, filter by color or dark appearance, and browse image previews.
+- **Keep favorites handy.** Save frequently used wallpapers without moving the originals.
+- **Apply in a click.** Set a wallpaper across connected displays using native macOS APIs.
+- **Feel at home on macOS.** A SwiftUI gallery, sidebar, and inspector that follow the system interface.
+
+No account, Ghostty, Matugen, FloatPane, Homebrew, or preloaded image collection is required to use Core.
+
+## Pick your edition
+
+| | **Core** (`main`) | **Rice** (`rice`) |
+| --- | --- | --- |
+| Local library, search, filters, favorites | Yes | Yes |
+| Native wallpaper application | Yes | Yes |
+| Ghostty and Matugen required | No | Yes |
+| Wallpaper-driven Ghostty colors | No | Yes |
+| Development and maintenance | Active | Active |
+
+**[See Wallflow Rice](https://github.com/UltraBot05/wallflow/tree/rice)** if you want wallpaper-driven terminal colors. Both editions are maintained and can be installed side by side.
+
+## Download and install
+
+**[View GitHub Releases](https://github.com/UltraBot05/wallflow/releases)**
+
+Signed, downloadable builds are being prepared. The Releases page is the download location when the first build is published. Until then, build locally with Apple's Swift toolchain:
 
 ```sh
+git clone https://github.com/UltraBot05/wallflow.git
+cd wallflow
+git switch main
+./Scripts/verify-repo.sh
 ./Scripts/build-app.sh
 open "dist/Wallflow Core.app"
 ```
 
-Or install beside your other apps without overwriting existing installations:
+Requires macOS 14 or newer and Xcode or Apple Command Line Tools **for source builds only**. The future app download will not require users to install a compiler.
 
-```sh
-./Scripts/install-local.sh
-```
+## First run
 
-On first launch, choose a folder. Wallflow reads images from that folder and does not copy them into the repository.
+1. Open Wallflow Core.
+2. Choose a folder of wallpapers.
+3. Select an image to preview it, filter the gallery, or mark it as a favorite.
+4. Click **Set Desktop Wallpaper**.
 
-## Two maintained editions
+Wallflow reads your existing files in place. It does not import your images into the Git repository.
 
-- `main`: Wallflow Core. A standalone native wallpaper manager.
-- `rice`: Wallflow Rice. The same wallpaper manager with required Matugen and Ghostty integration.
+## Privacy and development
 
-Both branches are maintained. Neither is legacy. The edition-specific app bundles use different names and identifiers, so they can coexist.
+Core does not require Accessibility permission or terminal integration to browse and apply wallpapers. Local preferences and the library index remain on your Mac.
 
-## Development
+This project is in active development. Both editions build in GitHub Actions, but compilation is not the same as testing or notarizing a downloadable release.
 
-The app currently builds directly with `swiftc`. See `Docs/DEVELOPMENT.md` for source structure, testing limitations and release checklist.
+- [Development notes](Docs/DEVELOPMENT.md)
+- [Privacy notes](Docs/PRIVACY.md)
+- [Issue tracker](https://github.com/UltraBot05/wallflow/issues)
+- [Release preparation](Docs/RELEASE_GUIDE.md)
 
-No personal wallpapers, generated themes, screenshots or local application data should be committed. For bug reports and planned work, use GitHub Issues after the new remote is created.
-
-## License
-
-A public distribution license has not been chosen yet. Do not publish binary releases until licensing and icon provenance are checked.
-
-## Developer verification
-
-Before pushing commits, run:
-
-```sh
-./Scripts/verify-repo.sh
-./Scripts/build-app.sh --replace
-```
-
-The second command replaces only this branch's ignored `dist` build after making a backup. See [development notes](Docs/DEVELOPMENT.md), [GitHub workflow](Docs/GITHUB_WORKFLOW.md) and [release checklist](Docs/RELEASE_CHECKLIST.md).
+**License:** To be selected before the repository is made public. Source visibility alone does not grant reuse rights.
