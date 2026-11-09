@@ -20,6 +20,13 @@
 
 <sub>Wallflow Rice on macOS. Screenshot from a development build.</sub>
 
+## Alpha downloads
+
+**[Download Wallflow Rice alpha](https://github.com/UltraBot05/wallflow/releases/tag/rice-v0.6.0-alpha.1)**  |  [Installation and security notes](Docs/INSTALL_UNSIGNED_ALPHA.md)
+
+**Ad-hoc signed, unnotarized Apple Silicon alpha.** macOS may ask for additional approval. Read the installation notes before downloading.
+
+
 ## Wallpaper browsing, with color coordination
 
 Rice brings the same image-first wallpaper browser as Core, then coordinates your Ghostty terminal palette with the wallpaper you apply.
@@ -46,7 +53,7 @@ If you just want wallpaper management without those dependencies, choose **[Wall
 
 **[View GitHub Releases](https://github.com/UltraBot05/wallflow/releases)**
 
-Signed, downloadable builds are being prepared. In the meantime, build from source:
+Ad-hoc signed Apple Silicon alpha builds are available in [GitHub Releases](https://github.com/UltraBot05/wallflow/releases/tag/rice-v0.6.0-alpha.1). You can also build from source:
 
 ```sh
 git clone https://github.com/UltraBot05/wallflow.git
@@ -86,7 +93,7 @@ Your images stay in their chosen folder. Rice invokes locally installed tools an
 - [Rice setup](Docs/RICE_SETUP.md)
 - [Development notes](Docs/DEVELOPMENT.md)
 - [Privacy notes](Docs/PRIVACY.md)
-- [Release preparation](Docs/RELEASE_GUIDE.md)
+- [Alpha installation](Docs/INSTALL_UNSIGNED_ALPHA.md)
 - [Issues](https://github.com/UltraBot05/wallflow/issues)
 
-**License:** [MIT](LICENSE)..
+**License:** [MIT](LICENSE).
