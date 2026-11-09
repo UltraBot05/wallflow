@@ -25,3 +25,13 @@ Run `./Scripts/build-app.sh` on a Mac with the Xcode Command Line Tools installe
 ## Releases
 
 Keep editions independent and identifiable. Never publish a Mac app with ad hoc signing as a polished distribution release. Decide a code-signing and notarization process, install/upgrade behavior, licensing and user documentation first.
+
+## Repeatable local builds
+
+Run `./Scripts/verify-repo.sh` to catch source separation and tracked-file mistakes.
+
+`./Scripts/build-app.sh` refuses to overwrite an existing build by default. To rebuild, quit the edition first, then run `./Scripts/build-app.sh --replace`. The old build is saved as a ZIP under `dist/.wallflow-backups/` before replacement.
+
+Use `./Scripts/signing-info.sh` to see the signing identity. With a compatible code-signing certificate already available, set `WALLFLOW_CODESIGN_IDENTITY` to its name or fingerprint when building. Ad hoc signing (`-`) is for local development only and may invalidate Accessibility approval after each rebuild. The build script cannot create or trust a signing identity automatically.
+
+Local source builds are not notarized distribution builds. The `--replace` flag only affects the ignored `dist` directory, not the installed app in `~/Applications`.

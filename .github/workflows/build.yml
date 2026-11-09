@@ -1,0 +1,27 @@
+name: Build macOS application
+
+on:
+  push:
+    branches: [main, rice]
+  pull_request:
+    branches: [main, rice]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Validate repository edition
+        run: ./Scripts/verify-repo.sh
+      - name: Compile and sign local test application
+        run: ./Scripts/build-app.sh
+      - name: Inspect application bundle
+        shell: bash
+        run: |
+          source edition.conf
+          /usr/bin/plutil -lint "dist/$APP_NAME.app/Contents/Info.plist"
+          /usr/bin/codesign --verify "dist/$APP_NAME.app"
